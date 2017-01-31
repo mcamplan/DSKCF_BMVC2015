@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of runDSKCF</title>
+  <meta name="keywords" content="runDSKCF">
+  <meta name="description" content="runDSKCF.m is a script to test the DS-KCF RGBD tracker">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html DS-KCFcode --><!-- menu.html testDS-KCFScripts -->
+<h1>runDSKCF
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>runDSKCF.m is a script to test the DS-KCF RGBD tracker</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> runDSKCF.m is a script to test the DS-KCF RGBD tracker 
+
+described in 
+ [1] M. Camplani, S. Hannuna, D. Damen, M. Mirmehdi, A. Paiment, L. Tao, 
+ T. burghard. Robust Real-time RGB-D Tracking with Depth Scaling Kernelised 
+ Correlation Filters and Occlusion Handling, BMVC 2015
+
+ the script shows how to:
+   -to set DS-KCF parameters
+   -to select folder(s) containing depth and color images 
+   -to run the DS-KCF tracking core
+
+  in this example the RGBD princeton data [2] (validation set) presented in 
+  is used (see the data folder of this package). The data folder structure 
+  has to be as in the example
+  
+  TOPFOLDER
+       VideoSequence1
+               .
+               .
+       VideoSequenceK
+                       depth           (folder Containing Depth Data)
+                       rgb             (folder Containing Color Data)
+                       init.txt        (tracker BB for the first frame)
+                       frames.mat*      (info about frames order)
+                       framesNEW.mat*   (info about frames order)
+               .
+               .
+       VideoSequenceN
+
+  *Please read the DS-KCF paper about depth and color depth stream
+  alignement. framesNEW.mat is the more accurate selection of aligned
+  depth and color frames proposed in our paper for the dataset presented
+  in [2]. Note that to load other datasets or sequences framesNEW.mat could 
+  not be required (i.e. simple sequential images ID)
+
+  About the meaning of the various parameters please read [1] and [3] or 
+  help of WRAPPERDSKCF and XXXXX functions
+
+  [1] M. Camplani, S. Hannuna, D. Damen, M. Mirmehdi, A. Paiment, L. Tao, 
+   T. burghard. Robust Real-time RGB-D Tracking with Depth Scaling Kernelised 
+   Correlation Filters and Occlusion Handling, BMVC 2015
+  
+  [2] S. Song and J. Xiao. Tracking revisited using RGBD camera: Unified benchmark and
+      baselines. In Computer Vision (ICCV), 2013 IEEE International Conference on, pages
+      233–240, 2013.
+
+  [3] J. F. Henriques, R. Caseiro, P. Martins, and J. Batista. High-speed
+  tracking with kernelized correlation filters. Pattern Analysis and
+  Machine Intelligence, IEEE Transactions on, 2015.
+
+  University of Bristol
+  Massimo Camplani and Sion Hannuna
+  
+  massimo.camplani@bristol.ac.uk
+  hannuna@compsci.bristol.ac.uk</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../DS-KCFcode/functionsIO/generateFolderResults.html" class="code" title="function tmpDestFolder=generateFolderResults(rootDestFolder,videoName,feature_type)">generateFolderResults</a>	generateFolderResults.m is a function to automatically generate the results folder where tracker's output files are stored</li><li><a href="../../DS-KCFcode/functionsIO/load_video_info_depthFROMMAT.html" class="code" title="function [img_files, depth_files, pos, target_sz, ground_truth, video_path, depth_path] = load_video_info_depthFROMMAT(base_path, video,newOrder)">load_video_info_depthFROMMAT</a>	LOAD_VIDEO_INFO_DEPTHFROMMAT.m is a automatically generates the relevant information for the video in the given path</li><li><a href="../../DS-KCFcode/wrapperDSKCF.html" class="code" title="function [dsKCFoutputSr,dsKCFoutputSq, avTime,totalTime] =wrapperDSKCF(video_path, depth_path, img_files, depth_files, pos, target_sz,DSKCFparameters, show_visualization,save_Images,dest_path,noBitShift)">wrapperDSKCF</a>	WRAPPERDSKCF.m is the wrapper function for the DS-KCF tracker [1]</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% runDSKCF.m is a script to test the DS-KCF RGBD tracker</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%described in</span>
+0004 <span class="comment">% [1] M. Camplani, S. Hannuna, D. Damen, M. Mirmehdi, A. Paiment, L. Tao,</span>
+0005 <span class="comment">% T. burghard. Robust Real-time RGB-D Tracking with Depth Scaling Kernelised</span>
+0006 <span class="comment">% Correlation Filters and Occlusion Handling, BMVC 2015</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% the script shows how to:</span>
+0009 <span class="comment">%   -to set DS-KCF parameters</span>
+0010 <span class="comment">%   -to select folder(s) containing depth and color images</span>
+0011 <span class="comment">%   -to run the DS-KCF tracking core</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%  in this example the RGBD princeton data [2] (validation set) presented in</span>
+0014 <span class="comment">%  is used (see the data folder of this package). The data folder structure</span>
+0015 <span class="comment">%  has to be as in the example</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%  TOPFOLDER</span>
+0018 <span class="comment">%       VideoSequence1</span>
+0019 <span class="comment">%               .</span>
+0020 <span class="comment">%               .</span>
+0021 <span class="comment">%       VideoSequenceK</span>
+0022 <span class="comment">%                       depth           (folder Containing Depth Data)</span>
+0023 <span class="comment">%                       rgb             (folder Containing Color Data)</span>
+0024 <span class="comment">%                       init.txt        (tracker BB for the first frame)</span>
+0025 <span class="comment">%                       frames.mat*      (info about frames order)</span>
+0026 <span class="comment">%                       framesNEW.mat*   (info about frames order)</span>
+0027 <span class="comment">%               .</span>
+0028 <span class="comment">%               .</span>
+0029 <span class="comment">%       VideoSequenceN</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">%  *Please read the DS-KCF paper about depth and color depth stream</span>
+0032 <span class="comment">%  alignement. framesNEW.mat is the more accurate selection of aligned</span>
+0033 <span class="comment">%  depth and color frames proposed in our paper for the dataset presented</span>
+0034 <span class="comment">%  in [2]. Note that to load other datasets or sequences framesNEW.mat could</span>
+0035 <span class="comment">%  not be required (i.e. simple sequential images ID)</span>
+0036 <span class="comment">%</span>
+0037 <span class="comment">%  About the meaning of the various parameters please read [1] and [3] or</span>
+0038 <span class="comment">%  help of WRAPPERDSKCF and XXXXX functions</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%  [1] M. Camplani, S. Hannuna, D. Damen, M. Mirmehdi, A. Paiment, L. Tao,</span>
+0041 <span class="comment">%   T. burghard. Robust Real-time RGB-D Tracking with Depth Scaling Kernelised</span>
+0042 <span class="comment">%   Correlation Filters and Occlusion Handling, BMVC 2015</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">%  [2] S. Song and J. Xiao. Tracking revisited using RGBD camera: Unified benchmark and</span>
+0045 <span class="comment">%      baselines. In Computer Vision (ICCV), 2013 IEEE International Conference on, pages</span>
+0046 <span class="comment">%      233–240, 2013.</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">%  [3] J. F. Henriques, R. Caseiro, P. Martins, and J. Batista. High-speed</span>
+0049 <span class="comment">%  tracking with kernelized correlation filters. Pattern Analysis and</span>
+0050 <span class="comment">%  Machine Intelligence, IEEE Transactions on, 2015.</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">%  University of Bristol</span>
+0053 <span class="comment">%  Massimo Camplani and Sion Hannuna</span>
+0054 <span class="comment">%</span>
+0055 <span class="comment">%  massimo.camplani@bristol.ac.uk</span>
+0056 <span class="comment">%  hannuna@compsci.bristol.ac.uk</span>
+0057 
+0058 clc
+0059 clear all
+0060 currentFolder=cd();
+0061 <span class="comment">%%add the DS-KCFresults</span>
+0062 
+0063 dskcfPath{1}=<span class="string">'../'</span>;
+0064 dskcfPath{2}=<span class="string">'../functionsDepthSeg'</span>;
+0065 dskcfPath{3}=<span class="string">'../functionsIO'</span>;
+0066 dskcfPath{4}=<span class="string">'../functionsOcclusions'</span>;
+0067 dskcfPath{5}=<span class="string">'../functionsScaleChange'</span>;
+0068 dskcfPath{6}=<span class="string">'../functionsTracking'</span>;
+0069 
+0070 <span class="keyword">for</span> i=1:length(dskcfPath)
+0071     cd(dskcfPath{i});
+0072     tmpPath=cd();
+0073     <span class="comment">%addpath(genpath(tmpPath));</span>
+0074     addpath(tmpPath);
+0075     cd(currentFolder);
+0076 <span class="keyword">end</span>
+0077 
+0078 cd(currentFolder)
+0079 
+0080 <span class="comment">%insert here the absolute path here you want to save your results or use</span>
+0081 <span class="comment">%the relative path DS-KCFresults</span>
+0082 rootDestFolder=(<span class="string">'../../DS-KCFresults'</span>);
+0083 mkdir(rootDestFolder);
+0084 cd(rootDestFolder);
+0085 <span class="comment">%take absolute value and create the results folder</span>
+0086 rootDestFolder=cd();
+0087 
+0088 
+0089 cd(currentFolder)
+0090 
+0091 <span class="comment">%now select the data folder</span>
+0092 rootSourceFolder=(<span class="string">'../../data/ValidationSet'</span>);
+0093 cd(rootSourceFolder);
+0094 rootSourceFolder=cd();
+0095 
+0096 
+0097 <span class="comment">%select all the videos in the folder</span>
+0098 dirInfo = dir();            
+0099 isDir = [dirInfo.isdir];             
+0100 listAllVideos = {dirInfo(isDir).name};   
+0101 listAllVideos = listAllVideos(3:end);
+0102 
+0103 <span class="comment">%If you don't want to precess all the video set this to false</span>
+0104 processAllVideos=false;
+0105 
+0106 <span class="comment">%eventually select your subset of videos</span>
+0107 <span class="keyword">if</span>(processAllVideos==false)
+0108     <span class="comment">%insert video names manually!!!!</span>
+0109     <span class="comment">%listVideos{2}='bear_front';</span>
+0110     listVideos{1}=<span class="string">'new_ex_occ4'</span>;
+0111     <span class="comment">%listVideos{2}='zcup_move_1';</span>
+0112     <span class="comment">%listVideos{3}='child_no1';</span>
+0113     <span class="comment">%listVideos{1}='face_occ5';</span>
+0114 <span class="keyword">else</span>
+0115     listVideos=listAllVideos;
+0116 <span class="keyword">end</span>
+0117 
+0118 <span class="comment">%Saving info struct saveParameters contains some flags about saving tracker</span>
+0119 <span class="comment">%results</span>
+0120 saveParameters.savingImage=true; <span class="comment">%save images with Bounding Box overlapped</span>
+0121 saveParameters.savingTrackBool=true; <span class="comment">%save tracker output</span>
+0122 saveParameters.savingDSKCFParamMat=true;  <span class="comment">%save in a matlab file the parameters used</span>
+0123 saveParameters.overwriteFolderBool=false; <span class="comment">%overwrite results folder or generate new ones</span>
+0124 saveParameters.show_visualization=false; <span class="comment">%show the tracking results live in a matlab figure</span>
+0125 saveParameters.noBitShift=false; <span class="comment">%for some dataset the depth data need a bitshift (see wrapperDSKCF())</span>
+0126 
+0127 
+0128 <span class="comment">%% SETTING TRACKER'S PARAMETERS</span>
+0129 <span class="comment">%  the struct &quot;DSKCFparameters&quot; is built to contains all the parameters it</span>
+0130 <span class="comment">%  will be created at the end of the section</span>
+0131 kernel_type=<span class="string">'gaussian'</span>;
+0132 
+0133 <span class="comment">%change only this flag for feature selection, the rest is automatic!!!!</span>
+0134 feature_type = <span class="string">'hog_concatenate'</span>;
+0135 kernel.type = kernel_type;
+0136 
+0137 <span class="comment">%Different features that can be used</span>
+0138 features.rawDepth= false;
+0139 features.rawColor=false;
+0140 features.rawConcatenate=false;
+0141 features.rawLinear=false;
+0142 features.hog_color = false;
+0143 features.hog_depth = false;
+0144 features.hog_concatenate = false;
+0145 features.hog_linear = false;
+0146 
+0147 
+0148 padding = 1.5;  <span class="comment">%extra area surrounding the target</span>
+0149 lambda = 1e-4;  <span class="comment">%regularization</span>
+0150 output_sigma_factor = 0.1;  <span class="comment">%spatial bandwidth (proportional to target)</span>
+0151 
+0152 <span class="comment">%Set the scale Sq in [1]</span>
+0153 scales = 0.4:0.1:2.2;
+0154 
+0155 
+0156 <span class="comment">%Note this switch is not necessary, you can eventually</span>
+0157 <span class="keyword">switch</span> feature_type
+0158     <span class="keyword">case</span> <span class="string">'rawDepth'</span>,
+0159         interp_factor = 0.075;  <span class="comment">%linear interpolation factor for adaptation</span>
+0160         
+0161         kernel.sigma = 0.2;  <span class="comment">%gaussian kernel bandwidth</span>
+0162         
+0163         kernel.poly_a = 1;  <span class="comment">%polynomial kernel additive term</span>
+0164         kernel.poly_b = 7;  <span class="comment">%polynomial kernel exponent</span>
+0165         
+0166         features.rawDepth = true;
+0167         cell_size = 1;
+0168     <span class="keyword">case</span> <span class="string">'rawColor'</span>,
+0169         interp_factor = 0.075;  <span class="comment">%linear interpolation factor for adaptation</span>
+0170         
+0171         kernel.sigma = 0.2;  <span class="comment">%gaussian kernel bandwidth</span>
+0172         
+0173         kernel.poly_a = 1;  <span class="comment">%polynomial kernel additive term</span>
+0174         kernel.poly_b = 7;  <span class="comment">%polynomial kernel exponent</span>
+0175         
+0176         features.rawColor = true;
+0177         cell_size = 1;
+0178 
+0179       <span class="keyword">case</span> <span class="string">'rawConcatenate'</span>,
+0180         interp_factor = 0.075;  <span class="comment">%linear interpolation factor for adaptation</span>
+0181         
+0182         kernel.sigma = 0.2;  <span class="comment">%gaussian kernel bandwidth</span>
+0183         
+0184         kernel.poly_a = 1;  <span class="comment">%polynomial kernel additive term</span>
+0185         kernel.poly_b = 7;  <span class="comment">%polynomial kernel exponent</span>
+0186         
+0187         features.rawConcatenate = true;
+0188         cell_size = 1;
+0189     <span class="keyword">case</span> <span class="string">'rawLinear'</span>,
+0190         interp_factor = 0.075;  <span class="comment">%linear interpolation factor for adaptation</span>
+0191         
+0192         kernel.sigma = 0.2;  <span class="comment">%gaussian kernel bandwidth</span>
+0193         
+0194         kernel.poly_a = 1;  <span class="comment">%polynomial kernel additive term</span>
+0195         kernel.poly_b = 7;  <span class="comment">%polynomial kernel exponent</span>
+0196         
+0197         features.rawLinear = true;
+0198         cell_size = 1;
+0199 
+0200     <span class="keyword">case</span> <span class="string">'hog_color'</span>
+0201         interp_factor = 0.02;
+0202         
+0203         kernel.sigma = 0.5;
+0204         
+0205         kernel.poly_a = 1;
+0206         kernel.poly_b = 9;
+0207         
+0208         features.hog_color = true;
+0209         features.hog_orientations = 9;
+0210         cell_size = 4;
+0211     <span class="keyword">case</span> <span class="string">'hog_depth'</span>
+0212         interp_factor = 0.02;
+0213         
+0214         kernel.sigma = 0.5;
+0215         
+0216         kernel.poly_a = 1;
+0217         kernel.poly_b = 9;
+0218         
+0219         features.hog_depth = true;
+0220         features.hog_orientations = 9;
+0221         cell_size = 4;
+0222     <span class="keyword">case</span> <span class="string">'hog_concatenate'</span>
+0223         interp_factor = 0.02;
+0224         
+0225         kernel.sigma = 0.5;
+0226         
+0227         kernel.poly_a = 1;
+0228         kernel.poly_b = 9;
+0229         
+0230         features.hog_concatenate = true;
+0231         features.hog_orientations = 9;
+0232         cell_size = 4;
+0233     <span class="keyword">case</span> <span class="string">'hog_linear'</span>
+0234         interp_factor = 0.02;
+0235         
+0236         kernel.sigma = 0.5;
+0237         
+0238         kernel.poly_a = 1;
+0239         kernel.poly_b = 9;
+0240         
+0241         features.hog_linear = true;
+0242         features.hog_orientations = 9;
+0243         cell_size = 4;
+0244                 
+0245     <span class="keyword">otherwise</span>
+0246         error(<span class="string">'Unknown feature.'</span>)
+0247 <span class="keyword">end</span>
+0248 
+0249 <span class="comment">%copy the parameters to the struct</span>
+0250 DSKCFparameters.features=features; <span class="comment">%feature selection for tracking</span>
+0251 DSKCFparameters.kernel=kernel; <span class="comment">%kernel size and type</span>
+0252 DSKCFparameters.interp_factor=interp_factor; <span class="comment">%interpolation factor</span>
+0253 DSKCFparameters.cell_size=cell_size; <span class="comment">%HOG parameters</span>
+0254 DSKCFparameters.padding=padding;
+0255 DSKCFparameters.lambda=lambda; 
+0256 DSKCFparameters.output_sigma_factor=output_sigma_factor;
+0257 DSKCFparameters.scales=scales; <span class="comment">% fixed scales</span>
+0258 
+0259 <span class="comment">%% PROCESSING LOOP</span>
+0260 
+0261 numVideo=length(listVideos);
+0262 
+0263 <span class="comment">% For the Princeton dataset</span>
+0264 loadFileOrder=<span class="string">'newOrder'</span>;
+0265 <span class="comment">%loadFileOrder='princetonMAT';</span>
+0266 
+0267 <span class="comment">%Please read the DS-KCF paper about depth and color depth stream</span>
+0268 <span class="comment">%  alignement. framesNEW.mat is the more accurate selection of aligned</span>
+0269 <span class="comment">%  depth and color frames proposed in our paper for the dataset presented</span>
+0270 <span class="comment">%  in [2]. Note that to load other datasets or sequences framesNEW.mat could</span>
+0271 <span class="comment">%  not be required (i.e. simple sequential images ID)</span>
+0272 
+0273 <span class="comment">%For each selected sequence start to process!!!!!!</span>
+0274 <span class="keyword">for</span> i=1:numVideo
+0275     
+0276     <span class="comment">%Generate a tmpResults folder with this name</span>
+0277     <span class="comment">%DS-KCF_VIDEONAME_featureSelected_#ID. The folder is generated with a</span>
+0278     <span class="comment">%different #ID if run multiple times and  saveParameters.overwriteFolderBool</span>
+0279     <span class="comment">%has been set to false. See the help of generateFolderResults</span>
+0280     tmpDestFolder=<a href="../../DS-KCFcode/functionsIO/generateFolderResults.html" class="code" title="function tmpDestFolder=generateFolderResults(rootDestFolder,videoName,feature_type)">generateFolderResults</a>(rootDestFolder,listVideos{i},feature_type);
+0281     
+0282     <span class="comment">%save in the folder input parameters and the current WORKSPACE!!!!!</span>
+0283     save([tmpDestFolder <span class="string">'/inputParam.mat'</span>]); 
+0284     
+0285     boolPrinceton=strcmp(loadFileOrder,<span class="string">'princetonMAT'</span>);
+0286     boolNewOrder=strcmp(loadFileOrder,<span class="string">'newOrder'</span>);
+0287     
+0288     <span class="comment">%Load Image information as path etc. Read also the inititial target</span>
+0289     <span class="comment">%position</span>
+0290     
+0291     <span class="keyword">if</span>(boolNewOrder)
+0292         [img_files, depth_files, pos, target_sz, ground_truth, video_path, depth_path] = <span class="keyword">...</span>
+0293             <a href="../../DS-KCFcode/functionsIO/load_video_info_depthFROMMAT.html" class="code" title="function [img_files, depth_files, pos, target_sz, ground_truth, video_path, depth_path] = load_video_info_depthFROMMAT(base_path, video,newOrder)">load_video_info_depthFROMMAT</a>(rootSourceFolder, listVideos{i},1);
+0294     <span class="keyword">else</span>
+0295         [img_files, depth_files, pos, target_sz, ground_truth, video_path, depth_path] = <span class="keyword">...</span>
+0296             <a href="../../DS-KCFcode/functionsIO/load_video_info_depthFROMMAT.html" class="code" title="function [img_files, depth_files, pos, target_sz, ground_truth, video_path, depth_path] = load_video_info_depthFROMMAT(base_path, video,newOrder)">load_video_info_depthFROMMAT</a>(rootSourceFolder, listVideos{i},0);
+0297     <span class="keyword">end</span>
+0298     
+0299     <span class="comment">%call tracker wrapper function with all the relevant parameters</span>
+0300     [dsKCFoutputSr,dsKCFoutputSq, avTime,totalTime] = <a href="../../DS-KCFcode/wrapperDSKCF.html" class="code" title="function [dsKCFoutputSr,dsKCFoutputSq, avTime,totalTime] =wrapperDSKCF(video_path, depth_path, img_files, depth_files, pos, target_sz,DSKCFparameters, show_visualization,save_Images,dest_path,noBitShift)">wrapperDSKCF</a>(video_path, depth_path,<span class="keyword">...</span>
+0301         img_files, depth_files, pos, target_sz, DSKCFparameters,saveParameters.show_visualization,<span class="keyword">...</span>
+0302         saveParameters.savingImage,tmpDestFolder,saveParameters.noBitShift );
+0303    
+0304     <span class="comment">%save tracking results and processing time</span>
+0305     save([tmpDestFolder <span class="string">'/procTime.mat'</span>], <span class="string">'totalTime'</span>);
+0306     save([tmpDestFolder <span class="string">'/procTime.txt'</span>], <span class="string">'totalTime'</span>,<span class="string">'-ascii'</span>);
+0307     
+0308     save([tmpDestFolder <span class="string">'/procTimeFrames.mat'</span>], <span class="string">'avTime'</span>);
+0309     save([tmpDestFolder <span class="string">'/procTimeFrames.txt'</span>], <span class="string">'avTime'</span>,<span class="string">'-ascii'</span>);
+0310     
+0311     <span class="comment">%Note we are saving the results as y x height width</span>
+0312     <span class="comment">%to be consistent with the notation presented in the princeton RGB-D [2]</span>
+0313 
+0314     <span class="comment">%Results using Sr in [1] use this for your comparison</span>
+0315     trackRes=[dsKCFoutputSr];
+0316     save([tmpDestFolder <span class="string">'/'</span> listVideos{i} <span class="string">'.mat'</span>], <span class="string">'trackRes'</span>);
+0317     save([tmpDestFolder <span class="string">'/'</span> listVideos{i} <span class="string">'.txt'</span>], <span class="string">'trackRes'</span>,<span class="string">'-ascii'</span>);
+0318 
+0319     <span class="comment">%Results using Sq in [1]</span>
+0320     trackResTargetSize=[dsKCFoutputSq];
+0321     save([tmpDestFolder <span class="string">'/'</span> listVideos{i} <span class="string">'TargetSize.mat'</span>], <span class="string">'trackResTargetSize'</span>);
+0322     save([tmpDestFolder <span class="string">'/'</span> listVideos{i} <span class="string">'TargetSize.txt'</span>], <span class="string">'trackResTargetSize'</span>,<span class="string">'-ascii'</span>);
+0323 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 06-Jul-2015 12:12:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

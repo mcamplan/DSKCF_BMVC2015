@@ -1,0 +1,665 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of wrapperDSKCF</title>
+  <meta name="keywords" content="wrapperDSKCF">
+  <meta name="description" content="WRAPPERDSKCF.m is the wrapper function for the DS-KCF tracker [1]">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html DS-KCFcode -->
+<h1>wrapperDSKCF
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>WRAPPERDSKCF.m is the wrapper function for the DS-KCF tracker [1]</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [dsKCFoutputSr,dsKCFoutputSq, avTime,totalTime] =wrapperDSKCF(video_path, depth_path, img_files, depth_files, pos, target_sz,DSKCFparameters, show_visualization,save_Images,dest_path,noBitShift) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRAPPERDSKCF.m is the wrapper function for the DS-KCF tracker [1]
+
+   WRAPPERDSKCF is the wrapper function of the DS-KCF tracker [1]. This
+   function, given the tracker parameters and the information about the
+   data that will be processed, initializes the tracker's data structures
+   and starts the frame by frame tracking processing. WRAPPERDSKCF
+   eventually save/visualize the tracker image output (images with
+   overlayed tracker bounding box) in the specified folder. Please note
+   that  this function was partially built extending the KCF tracker code
+   presented by Joao F. Henriques, in http://www.isr.uc.pt/~henriques/.
+
+   INPUT:
+  -video_path absolute path where color data is stored -depth_path
+  absolute path where depth data is stored 
+  -img_files the list of Color data files (N is the number of frame to be
+  processed) -depth_files  the list of Depth data files (N is the number
+  of frame to be processed)
+  -pos initial DS-KCF tracker position pos=[y x] where x is the column
+  index and y is the row index of the image
+  -target_sz initial target size target_sz=[height,width]
+  -DSKCFparameters structure containing DSKCF parameters, see the test
+  script testDS-KCFScripts\runDSKCF.m
+  -show_visualization flag to show the tracking results live in a matlab
+  figure
+  -save_Images save tracker's output as images with overlayed tracker
+   bounding box) in the specified folder dest_path
+  -dest_path absolute path of the destination folder where tracker's
+  output is saved
+  -noBitShift boolean value to properly load the depth data. In some cases
+  the depth is stored in 16bit images where every pixel contains the depth
+  data in mm. In this case noBitShift has to be set to false. On the
+  contrary for other datasets (i.e. Princeton RGB-D) the data stored need
+  to be shifted as shown in this function
+
+
+   OUTPUT
+  -dsKCFoutputSr tracker's output using scale factor Sr in [1]. This a Nx5
+  vector containing in each row the tracker results for the corresponding
+  frame. In particular the output is formatted as suggested in the
+  princetonRGB-D dataset in [3]. For each row the first four columns
+  contain the bounding box information in the format [topLeftX, topLeftY,
+  bottomRightX, bottomRightY]. Note that in case of lost target the row
+  contains NaN values. The fifth column contains a flag to indicate
+  occlusions cases.
+
+  -dsKCFoutputSq tracker's output using scale factor Sq in [1]. This a Nx5
+  vector containing in each row the tracker results for the corresponding
+  frame. In particular the output is formatted as suggested in the
+  princetonRGB-D dataset in [3]. For each row the first four columns
+  contain the bounding box information in the format [topLeftX, topLeftY,
+  bottomRightX, bottomRightY]. Note that in case of lost target the row
+  contains NaN values. The fifth column contains a flag to indicate
+  occlusions cases.
+
+  -avTime this is a Nx1 vector containing the processing time, expressed
+  in ms,for each frame. Note that it does not condiser the reading and
+  writing time from the disk
+
+  -totalTime is the total time required to process the entire sequence
+  
+  See also LOAD_VIDEO_INFO_BOBOTRESULTS,LOAD_VIDEO_INFO_DEPTHFROMMAT,
+  INITDSKCFPARAM,INITDSKCFTRACKER,FROMCENTRALPOINTTOBB,INITDISTRIBUTIONFAST
+  MANUALBBDRAW_OCC, MANUALBBDRAW_OCC_WITHLABELSVISUALIZE,
+  INITDSKCFTRACKER_OCCLUDER,SINGLEFRAMEDSKCF
+
+
+  [1] M. Camplani, S. Hannuna, D. Damen, M. Mirmehdi, A. Paiment, L. Tao,
+   T. burghard. Robust Real-time RGB-D Tracking with Depth Scaling
+   Kernelised Correlation Filters and Occlusion Handling, BMVC 2015
+
+  [2] J. F. Henriques, R. Caseiro, P. Martins, and J. Batista. High-speed
+  tracking with kernelized correlation filters. Pattern Analysis and
+  Machine Intelligence, IEEE Transactions on, 2015.
+
+  [3] Shuran Song and Jianxiong Xiao. Tracking Revisited using RGBD
+  Camera: Baseline and Benchmark. 2013.
+
+  University of Bristol
+  Massimo Camplani and Sion Hannuna
+
+  massimo.camplani@bristol.ac.uk
+  hannuna@compsci.bristol.ac.uk</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../DS-KCFcode/functionsDepthSeg/initDistributionFast.html" class="code" title="function [targetDepth,targetStd,LabelReg,regionIndex,Centers,LUT] = initDistributionFast(bbIn, depth16Bit,noData)">initDistributionFast</a>	INITDISTRIBUTIONFAST.m initializes the depth distribution of the DS-KCF tracker</li><li><a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabels.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabels(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2)">manualBBdraw_OCC_WithLabels</a>	MANUALBBDRAW_OCC_WITHLABELS.m function that produces graphical output for DSKCF tracker</li><li><a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>	MANUALBBDRAW_OCC_WITHLABELSVISUALIZE.m produces graphical output for DSKCF tracker</li><li><a href="../DS-KCFcode/functionsScaleChange/initDSKCFparam.html" class="code" title="function scaleDSKCF_struct=initDSKCFparam(DSKCFparameters,target_sz,pos)">initDSKCFparam</a>	INITDSKCFPARAM.m initializes the scale data structure for DS-KCF tracker [1]</li><li><a href="../DS-KCFcode/functionsTracking/fromCentralPointToBB.html" class="code" title="function bb=fromCentralPointToBB(centerX,centerY,width,height,maxX,maxY)">fromCentralPointToBB</a>	FROMCENTRALPOINTTOBB.m is a function for calculating target bounding box</li><li><a href="../DS-KCFcode/functionsTracking/initDSKCFtracker.html" class="code" title="function trackerDSKCF_struct=initDSKCFtracker()">initDSKCFtracker</a>	INITDSKCFTRACKER.m initializes the data structure for DS-KCF tracker [1]</li><li><a href="../DS-KCFcode/functionsTracking/initDSKCFtracker_occluder.html" class="code" title="function trackerDSKCF_struct=initDSKCFtracker_occluder()">initDSKCFtracker_occluder</a>	INITDSKCFTRACKER_occluder.m initializes the data structure for DS-KCF tracker (occluder) [1]</li><li><a href="../DS-KCFcode/functionsTracking/singleFrameDSKCF.html" class="code" title="function [pos,trackerDSKCF_struct,trackerDSKCF_structOccluder,scaleDSKCF_struct,DSKCFparameters_Occluder]=singleFrameDSKCF(firstFrame,pos,frameCurr,trackerDSKCF_struct,DSKCFparameters,scaleDSKCF_struct,trackerDSKCF_structOccluder,DSKCFparameters_Occluder)">singleFrameDSKCF</a>	SINGLEFRAMEDSKCF.m is the core function of DS-KCF tracker</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../DS-KCFcode/testDS-KCFScripts/runDSKCF.html" class="code" title="">runDSKCF</a>	runDSKCF.m is a script to test the DS-KCF RGBD tracker</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [dsKCFoutputSr,dsKCFoutputSq, avTime,totalTime] = </a><span class="keyword">...</span>
+0002     wrapperDSKCF(video_path, depth_path, img_files, depth_files, pos, target_sz, <span class="keyword">...</span>
+0003     DSKCFparameters, show_visualization,save_Images,dest_path,noBitShift)
+0004 <span class="comment">% WRAPPERDSKCF.m is the wrapper function for the DS-KCF tracker [1]</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   WRAPPERDSKCF is the wrapper function of the DS-KCF tracker [1]. This</span>
+0007 <span class="comment">%   function, given the tracker parameters and the information about the</span>
+0008 <span class="comment">%   data that will be processed, initializes the tracker's data structures</span>
+0009 <span class="comment">%   and starts the frame by frame tracking processing. WRAPPERDSKCF</span>
+0010 <span class="comment">%   eventually save/visualize the tracker image output (images with</span>
+0011 <span class="comment">%   overlayed tracker bounding box) in the specified folder. Please note</span>
+0012 <span class="comment">%   that  this function was partially built extending the KCF tracker code</span>
+0013 <span class="comment">%   presented by Joao F. Henriques, in http://www.isr.uc.pt/~henriques/.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   INPUT:</span>
+0016 <span class="comment">%  -video_path absolute path where color data is stored -depth_path</span>
+0017 <span class="comment">%  absolute path where depth data is stored</span>
+0018 <span class="comment">%  -img_files the list of Color data files (N is the number of frame to be</span>
+0019 <span class="comment">%  processed) -depth_files  the list of Depth data files (N is the number</span>
+0020 <span class="comment">%  of frame to be processed)</span>
+0021 <span class="comment">%  -pos initial DS-KCF tracker position pos=[y x] where x is the column</span>
+0022 <span class="comment">%  index and y is the row index of the image</span>
+0023 <span class="comment">%  -target_sz initial target size target_sz=[height,width]</span>
+0024 <span class="comment">%  -DSKCFparameters structure containing DSKCF parameters, see the test</span>
+0025 <span class="comment">%  script testDS-KCFScripts\runDSKCF.m</span>
+0026 <span class="comment">%  -show_visualization flag to show the tracking results live in a matlab</span>
+0027 <span class="comment">%  figure</span>
+0028 <span class="comment">%  -save_Images save tracker's output as images with overlayed tracker</span>
+0029 <span class="comment">%   bounding box) in the specified folder dest_path</span>
+0030 <span class="comment">%  -dest_path absolute path of the destination folder where tracker's</span>
+0031 <span class="comment">%  output is saved</span>
+0032 <span class="comment">%  -noBitShift boolean value to properly load the depth data. In some cases</span>
+0033 <span class="comment">%  the depth is stored in 16bit images where every pixel contains the depth</span>
+0034 <span class="comment">%  data in mm. In this case noBitShift has to be set to false. On the</span>
+0035 <span class="comment">%  contrary for other datasets (i.e. Princeton RGB-D) the data stored need</span>
+0036 <span class="comment">%  to be shifted as shown in this function</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%   OUTPUT</span>
+0040 <span class="comment">%  -dsKCFoutputSr tracker's output using scale factor Sr in [1]. This a Nx5</span>
+0041 <span class="comment">%  vector containing in each row the tracker results for the corresponding</span>
+0042 <span class="comment">%  frame. In particular the output is formatted as suggested in the</span>
+0043 <span class="comment">%  princetonRGB-D dataset in [3]. For each row the first four columns</span>
+0044 <span class="comment">%  contain the bounding box information in the format [topLeftX, topLeftY,</span>
+0045 <span class="comment">%  bottomRightX, bottomRightY]. Note that in case of lost target the row</span>
+0046 <span class="comment">%  contains NaN values. The fifth column contains a flag to indicate</span>
+0047 <span class="comment">%  occlusions cases.</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">%  -dsKCFoutputSq tracker's output using scale factor Sq in [1]. This a Nx5</span>
+0050 <span class="comment">%  vector containing in each row the tracker results for the corresponding</span>
+0051 <span class="comment">%  frame. In particular the output is formatted as suggested in the</span>
+0052 <span class="comment">%  princetonRGB-D dataset in [3]. For each row the first four columns</span>
+0053 <span class="comment">%  contain the bounding box information in the format [topLeftX, topLeftY,</span>
+0054 <span class="comment">%  bottomRightX, bottomRightY]. Note that in case of lost target the row</span>
+0055 <span class="comment">%  contains NaN values. The fifth column contains a flag to indicate</span>
+0056 <span class="comment">%  occlusions cases.</span>
+0057 <span class="comment">%</span>
+0058 <span class="comment">%  -avTime this is a Nx1 vector containing the processing time, expressed</span>
+0059 <span class="comment">%  in ms,for each frame. Note that it does not condiser the reading and</span>
+0060 <span class="comment">%  writing time from the disk</span>
+0061 <span class="comment">%</span>
+0062 <span class="comment">%  -totalTime is the total time required to process the entire sequence</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">%  See also LOAD_VIDEO_INFO_BOBOTRESULTS,LOAD_VIDEO_INFO_DEPTHFROMMAT,</span>
+0065 <span class="comment">%  INITDSKCFPARAM,INITDSKCFTRACKER,FROMCENTRALPOINTTOBB,INITDISTRIBUTIONFAST</span>
+0066 <span class="comment">%  MANUALBBDRAW_OCC, MANUALBBDRAW_OCC_WITHLABELSVISUALIZE,</span>
+0067 <span class="comment">%  INITDSKCFTRACKER_OCCLUDER,SINGLEFRAMEDSKCF</span>
+0068 <span class="comment">%</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">%  [1] M. Camplani, S. Hannuna, D. Damen, M. Mirmehdi, A. Paiment, L. Tao,</span>
+0071 <span class="comment">%   T. burghard. Robust Real-time RGB-D Tracking with Depth Scaling</span>
+0072 <span class="comment">%   Kernelised Correlation Filters and Occlusion Handling, BMVC 2015</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">%  [2] J. F. Henriques, R. Caseiro, P. Martins, and J. Batista. High-speed</span>
+0075 <span class="comment">%  tracking with kernelized correlation filters. Pattern Analysis and</span>
+0076 <span class="comment">%  Machine Intelligence, IEEE Transactions on, 2015.</span>
+0077 <span class="comment">%</span>
+0078 <span class="comment">%  [3] Shuran Song and Jianxiong Xiao. Tracking Revisited using RGBD</span>
+0079 <span class="comment">%  Camera: Baseline and Benchmark. 2013.</span>
+0080 <span class="comment">%</span>
+0081 <span class="comment">%  University of Bristol</span>
+0082 <span class="comment">%  Massimo Camplani and Sion Hannuna</span>
+0083 <span class="comment">%</span>
+0084 <span class="comment">%  massimo.camplani@bristol.ac.uk</span>
+0085 <span class="comment">%  hannuna@compsci.bristol.ac.uk</span>
+0086 
+0087 
+0088 <span class="comment">%As suggested in the original code of KCF resize target and image....</span>
+0089 resize_image = (sqrt(prod(target_sz)) &gt;= 100);  <span class="comment">%diagonal size &gt;= threshold</span>
+0090 <span class="keyword">if</span> resize_image,
+0091     pos = floor(pos / 2);
+0092     target_sz = floor(target_sz / 2);
+0093 <span class="keyword">end</span>
+0094 
+0095 
+0096 <span class="comment">%window size, taking padding into account</span>
+0097 DSKCFparameters.window_sz = floor(target_sz * (1 + DSKCFparameters.padding));
+0098 
+0099 <span class="comment">%initialize the scale parameters for the DSKCF algorithm accortind to the</span>
+0100 <span class="comment">%selected Sq (see [1]) information contained in DSKCFparameters</span>
+0101 scaleDSKCF_struct=<a href="../DS-KCFcode/functionsScaleChange/initDSKCFparam.html" class="code" title="function scaleDSKCF_struct=initDSKCFparam(DSKCFparameters,target_sz,pos)">initDSKCFparam</a>(DSKCFparameters,target_sz,pos);
+0102 
+0103 <span class="comment">%check if the scale is properly initialized....</span>
+0104 <span class="keyword">if</span>(isempty(scaleDSKCF_struct))
+0105     disp(<span class="string">'Scale structure initialization failed, tracking aborted'</span>);
+0106     dsKCFoutputSr=[];
+0107     dsKCFoutputSq=[];
+0108     avTime=[];
+0109     <span class="keyword">return</span>;
+0110 <span class="keyword">end</span>
+0111 
+0112 <span class="comment">%note: variables ending with 'f' are in the Fourier domain.</span>
+0113 
+0114 totalTime = 0;  <span class="comment">%to calculate FPS</span>
+0115 
+0116 <span class="comment">%init variables</span>
+0117 positions = zeros(numel(img_files), 2); <span class="comment">% where store tracker centroids</span>
+0118 dsKCFoutputSr = zeros(numel(img_files), 2);
+0119 dsKCFoutputSq = zeros(numel(img_files), 2);
+0120 
+0121 <span class="comment">%auxiliary variables to compute the final results of the tracker, in fact</span>
+0122 <span class="comment">%DS-KCF tracking core returns only the centroid of the target, we need also</span>
+0123 <span class="comment">%to store the size of it to return proper output parameters</span>
+0124 sizeSr = zeros(numel(img_files), 2);
+0125 sizeSq = zeros(numel(img_files), 2);
+0126 
+0127 frameCurr=[]; <span class="comment">%contains depth and color data of the current frame depth16Bit</span>
+0128 <span class="comment">%contains the 16bits depth information in mm. depth contains</span>
+0129 <span class="comment">%the normalize depth data as a grayscale image coded with 8bits</span>
+0130 <span class="comment">%depthNoData is the mask to identify missing depth data</span>
+0131 <span class="comment">%rgb is the color image and gray is the grayscale version of it</span>
+0132 
+0133 framePrev=[]; <span class="comment">%contains the same information of frameCurr but related</span>
+0134 <span class="comment">%to the previous frame</span>
+0135 
+0136 
+0137 occlusionState=[];<span class="comment">% vector containing flags about the detected occlusion state</span>
+0138 <span class="comment">%%%% TO BE CHECKED</span>
+0139 nanPosition=[];
+0140 
+0141 avTime=[];
+0142 <span class="comment">%%FRAME BY FRAME TRACKING.....</span>
+0143 <span class="keyword">for</span> frame = 1:numel(img_files),
+0144     <span class="comment">%load images</span>
+0145     im = imread([video_path img_files{frame}]);
+0146     depth = imread([depth_path depth_files{frame}]);
+0147     
+0148     <span class="comment">%% inserting type control for depth image</span>
+0149     <span class="keyword">if</span>(isa(depth,<span class="string">'uint16'</span>))
+0150         <span class="keyword">if</span>(noBitShift==false)
+0151             depth = bitor(bitshift(depth,-3), bitshift(depth,16-3));
+0152         <span class="keyword">end</span>
+0153         <span class="comment">%depth data in mm</span>
+0154         depth16Bit = depth;
+0155         
+0156         <span class="comment">%Normalize depth data as a grayscale image [0 255]</span>
+0157         depth = double(depth);
+0158         depth(depth==0) = 10000;
+0159         depth = (depth-500)/8500;<span class="comment">%only use the data from 0.5-8m</span>
+0160         depth(depth&lt;0) = 0;
+0161         depth(depth&gt;1) = 1;
+0162         depth = uint8(255*(1 - depth));
+0163     <span class="keyword">end</span>
+0164     
+0165     <span class="comment">%resize images</span>
+0166     <span class="keyword">if</span> size(im,3) &gt; 1,
+0167         imRGB=im;
+0168         im = rgb2gray(im);
+0169     <span class="keyword">else</span>
+0170         imRGB=im;
+0171         imRGB(:,:,2)=im;
+0172         imRGB(:,:,3)=im;
+0173     <span class="keyword">end</span>
+0174     
+0175     <span class="keyword">if</span> resize_image,
+0176         im = imresize(im, 0.5);
+0177         imRGB = imresize(imRGB, 0.5);
+0178         depth = imresize(depth, 0.5);
+0179         depth16Bit = depth16Bit((1:2:end),(1:2:end));
+0180     <span class="keyword">end</span>
+0181     
+0182     
+0183     
+0184     <span class="comment">%start measuring the time!!!!</span>
+0185     tic()
+0186     firstFrame=frame==1;
+0187     
+0188     <span class="comment">%Insert current frame data</span>
+0189     frameCurr.rgb   = imRGB;
+0190     frameCurr.gray   = im;
+0191     frameCurr.depth = double(depth);
+0192     frameCurr.depthNoData=depth16Bit==0;
+0193     frameCurr.depth16Bit=depth16Bit;
+0194     
+0195     <span class="comment">%for the first frame initialize the structures</span>
+0196     <span class="keyword">if</span>(firstFrame)
+0197         
+0198         trackerDSKCF_struct=<a href="../DS-KCFcode/functionsTracking/initDSKCFtracker.html" class="code" title="function trackerDSKCF_struct=initDSKCFtracker()">initDSKCFtracker</a>();
+0199         <span class="comment">%check if the scale is properly initialized....</span>
+0200         <span class="keyword">if</span>(isempty(trackerDSKCF_struct))
+0201             disp(<span class="string">'DS-KCF tracker structure initialization failed, tracking aborted'</span>);
+0202             dsKCFoutputSr=[];
+0203             dsKCFoutputSq=[];
+0204             avTime=[];
+0205             <span class="keyword">return</span>;
+0206         <span class="keyword">end</span>
+0207         <span class="comment">%%INITIALIZE HISTOGRAMS....</span>
+0208         framePrev.rgb   = imRGB;
+0209         framePrev.gray   = im;
+0210         framePrev.depth = depth;
+0211         framePrev.depthNoData=depth16Bit==0;
+0212         framePrev.depth16Bit=depth16Bit;
+0213         
+0214         trackerDSKCF_struct.previousTarget.posX=pos(2);
+0215         trackerDSKCF_struct.previousTarget.posY=pos(1);
+0216         trackerDSKCF_struct.previousTarget.h=scaleDSKCF_struct.target_sz(scaleDSKCF_struct.i).target_sz(1);
+0217         trackerDSKCF_struct.previousTarget.w=scaleDSKCF_struct.target_sz(scaleDSKCF_struct.i).target_sz(2);
+0218         trackerDSKCF_struct.previousTarget.bb=<a href="../DS-KCFcode/functionsTracking/fromCentralPointToBB.html" class="code" title="function bb=fromCentralPointToBB(centerX,centerY,width,height,maxX,maxY)">fromCentralPointToBB</a><span class="keyword">...</span>
+0219             (trackerDSKCF_struct.previousTarget.posX,trackerDSKCF_struct.previousTarget.posY,<span class="keyword">...</span>
+0220             trackerDSKCF_struct.previousTarget.w,trackerDSKCF_struct.previousTarget.h,size(im,2),size(im,1));
+0221         trackerDSKCF_struct.currentTarget.meanDepthObj=0;<span class="comment">% mean depth of the tracker object</span>
+0222         <span class="comment">%initialize depth distributions</span>
+0223         [trackerDSKCF_struct.previousTarget.meanDepthObj,trackerDSKCF_struct.previousTarget.stdDepthObj,<span class="keyword">...</span>
+0224             trackerDSKCF_struct.previousTarget.LabelRegions,<span class="keyword">...</span>
+0225             trackerDSKCF_struct.previousTarget.regionIndex,<span class="keyword">...</span>
+0226             trackerDSKCF_struct.previousTarget.Centers,<span class="keyword">...</span>
+0227             trackerDSKCF_struct.previousTarget.LUT] = <span class="keyword">...</span>
+0228             <a href="../DS-KCFcode/functionsDepthSeg/initDistributionFast.html" class="code" title="function [targetDepth,targetStd,LabelReg,regionIndex,Centers,LUT] = initDistributionFast(bbIn, depth16Bit,noData)">initDistributionFast</a>(trackerDSKCF_struct.previousTarget.bb, <span class="keyword">...</span>
+0229             framePrev.depth16Bit,framePrev.depthNoData);
+0230         
+0231         <span class="comment">%for the first frame copy everything also in the current target</span>
+0232         trackerDSKCF_struct.currentTarget=trackerDSKCF_struct.previousTarget;
+0233         
+0234         <span class="comment">%set the depth of the initial target in the scale data structure</span>
+0235         scaleDSKCF_struct.InitialDepth = trackerDSKCF_struct.previousTarget.meanDepthObj;
+0236         scaleDSKCF_struct.currDepth = trackerDSKCF_struct.previousTarget.meanDepthObj;
+0237         
+0238         <span class="comment">%initialize structures for the occluder object</span>
+0239         trackerDSKCF_structOccluder=<a href="../DS-KCFcode/functionsTracking/initDSKCFtracker_occluder.html" class="code" title="function trackerDSKCF_struct=initDSKCFtracker_occluder()">initDSKCFtracker_occluder</a>();
+0240         DSKCFparameters_Occluder=DSKCFparameters;<span class="comment">%these need to be resetted eventually in some parts</span>
+0241         
+0242         <span class="comment">%figure initialization</span>
+0243         <span class="keyword">if</span>(show_visualization)
+0244             
+0245             myFigColor=figure();
+0246             myFigDepth=figure();
+0247             set(myFigDepth,<span class="string">'resize'</span>,<span class="string">'off'</span>);
+0248             set(myFigColor,<span class="string">'resize'</span>,<span class="string">'off'</span>);
+0249         <span class="keyword">end</span>
+0250     <span class="keyword">end</span>
+0251 
+0252     <span class="comment">%DS-KCF tracker code need as input the position expressed as [y x],</span>
+0253     <span class="comment">%remember this particular while reading the code!!!!!</span>
+0254     [pos,trackerDSKCF_struct,trackerDSKCF_structOccluder,scaleDSKCF_struct,<span class="keyword">...</span>
+0255         DSKCFparameters_Occluder]=<a href="../DS-KCFcode/functionsTracking/singleFrameDSKCF.html" class="code" title="function [pos,trackerDSKCF_struct,trackerDSKCF_structOccluder,scaleDSKCF_struct,DSKCFparameters_Occluder]=singleFrameDSKCF(firstFrame,pos,frameCurr,trackerDSKCF_struct,DSKCFparameters,scaleDSKCF_struct,trackerDSKCF_structOccluder,DSKCFparameters_Occluder)">singleFrameDSKCF</a>(firstFrame,pos,frameCurr,<span class="keyword">...</span>
+0256         trackerDSKCF_struct,DSKCFparameters,scaleDSKCF_struct,<span class="keyword">...</span>
+0257         trackerDSKCF_structOccluder,DSKCFparameters_Occluder);
+0258     
+0259     <span class="comment">%Compose the Occlusion state vector for results</span>
+0260     occlusionState=[occlusionState ;trackerDSKCF_struct.currentTarget.underOcclusion];
+0261     
+0262     <span class="comment">%tracking finished,</span>
+0263     avTime=[avTime; toc];
+0264     totalTime = totalTime + avTime(end);
+0265     
+0266     <span class="comment">%% Just visualize......</span>
+0267     <span class="keyword">if</span> (save_Images==false &amp;&amp; show_visualization==true)
+0268         
+0269         <span class="comment">%eventually re-scale the images</span>
+0270         <span class="keyword">if</span>(resize_image)
+0271             imRGB = imresize(imRGB, 2);
+0272             depth = imresize(depth, 2);
+0273         <span class="keyword">end</span>
+0274         
+0275         <span class="comment">%empty tracking, so mark this frame</span>
+0276         <span class="keyword">if</span>(isempty(pos))
+0277             bbToPlot=[];
+0278             nanPosition=[nanPosition; 1];
+0279         <span class="keyword">else</span>
+0280             nanPosition=[nanPosition; 0];
+0281             
+0282             <span class="comment">%use the Sr scale factor (see [1] for more details)</span>
+0283             sr = scaleDSKCF_struct.InitialDepth / scaleDSKCF_struct.currDepth;
+0284             
+0285             targ_sz = round(scaleDSKCF_struct.InitialTargetSize * sr);
+0286             
+0287             <span class="comment">%calculate the corresponding bounding box for Plotting!!!!</span>
+0288             <span class="comment">%in this case we need [topLeftX, topLeftY,W,H]</span>
+0289             bbToPlot = [pos([2,1]) - targ_sz([2,1])/2, targ_sz([2,1])];
+0290             <span class="keyword">if</span>(resize_image)
+0291                 bbToPlot=bbToPlot*2;
+0292             <span class="keyword">end</span>
+0293         <span class="keyword">end</span>
+0294         
+0295         bbOCCToPlot=[];
+0296         <span class="keyword">if</span>(trackerDSKCF_struct.currentTarget.underOcclusion)
+0297             widthOCC=trackerDSKCF_struct.currentTarget.occBB(3)-trackerDSKCF_struct.currentTarget.occBB(1);
+0298             heightOCC=trackerDSKCF_struct.currentTarget.occBB(4)-trackerDSKCF_struct.currentTarget.occBB(2);
+0299             bbOCCToPlot=[trackerDSKCF_struct.currentTarget.occBB(1:2); widthOCC; heightOCC]';
+0300             <span class="keyword">if</span>(resize_image)
+0301                 bbOCCToPlot=bbOCCToPlot*2;
+0302             <span class="keyword">end</span>
+0303         <span class="keyword">end</span>
+0304         
+0305         <span class="keyword">if</span>(frame==1)
+0306             <a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(imRGB,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigColor);
+0307             positionColor=get(gcf,<span class="string">'OuterPosition'</span>);
+0308             positionColor(1)=positionColor(1)-floor(positionColor(3)/2) -25;
+0309             set(gcf,<span class="string">'OuterPosition'</span>,positionColor);
+0310             <a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(depth,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigDepth);
+0311             positionDepth=get(gcf,<span class="string">'OuterPosition'</span>);
+0312             positionDepth(1)=positionDepth(1)+floor(positionDepth(3)/2) +25;
+0313             set(gcf,<span class="string">'OuterPosition'</span>,positionDepth);
+0314         <span class="keyword">else</span>
+0315             <span class="comment">%myFigColor=figure();</span>
+0316             <span class="comment">%myFigDepth=figure();</span>
+0317             clf(myFigColor);
+0318             <a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(imRGB,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigColor);
+0319             
+0320             clf(myFigDepth);
+0321             <a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(depth,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigDepth);
+0322             drawnow
+0323             pause(0.05)
+0324         <span class="keyword">end</span>
+0325         
+0326     <span class="keyword">end</span>
+0327     <span class="comment">%% Visualize and save.....</span>
+0328     <span class="keyword">if</span> (save_Images==true &amp;&amp; show_visualization==true)
+0329         
+0330         <span class="comment">%eventually re-scale the images</span>
+0331         <span class="keyword">if</span>(resize_image)
+0332             imRGB = imresize(imRGB, 2);
+0333             depth = imresize(depth, 2);
+0334         <span class="keyword">end</span>
+0335         
+0336         <span class="comment">%empty tracking, so mark this frame</span>
+0337         <span class="keyword">if</span>(isempty(pos))
+0338             bbToPlot=[];
+0339             nanPosition=[nanPosition; 1];
+0340         <span class="keyword">else</span>
+0341             nanPosition=[nanPosition; 0];
+0342             
+0343             <span class="comment">%use the Sr scale factor (see [1] for more details)</span>
+0344             sr = scaleDSKCF_struct.InitialDepth / scaleDSKCF_struct.currDepth;
+0345             
+0346             targ_sz = round(scaleDSKCF_struct.InitialTargetSize * sr);
+0347             
+0348             <span class="comment">%calculate the corresponding bounding box for Plotting!!!!</span>
+0349             <span class="comment">%in this case we need [topLeftX, topLeftY,W,H]</span>
+0350             bbToPlot = [pos([2,1]) - targ_sz([2,1])/2, targ_sz([2,1])];
+0351             <span class="keyword">if</span>(resize_image)
+0352                 bbToPlot=bbToPlot*2;
+0353             <span class="keyword">end</span>
+0354         <span class="keyword">end</span>
+0355         
+0356         bbOCCToPlot=[];
+0357         <span class="keyword">if</span>(trackerDSKCF_struct.currentTarget.underOcclusion)
+0358             widthOCC=trackerDSKCF_struct.currentTarget.occBB(3)-trackerDSKCF_struct.currentTarget.occBB(1);
+0359             heightOCC=trackerDSKCF_struct.currentTarget.occBB(4)-trackerDSKCF_struct.currentTarget.occBB(2);
+0360             bbOCCToPlot=[trackerDSKCF_struct.currentTarget.occBB(1:2); widthOCC; heightOCC]';
+0361             <span class="keyword">if</span>(resize_image)
+0362                 bbOCCToPlot=bbOCCToPlot*2;
+0363             <span class="keyword">end</span>
+0364         <span class="keyword">end</span>
+0365         
+0366         <span class="keyword">if</span>(frame==1)
+0367             imRGB_tracked=<a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(imRGB,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigColor);
+0368             positionColor=get(gcf,<span class="string">'OuterPosition'</span>);
+0369             positionColor(1)=positionColor(1)-floor(positionColor(3)/2) -25;
+0370             set(gcf,<span class="string">'OuterPosition'</span>,positionColor);
+0371             dept_tracked=<a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(depth,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigDepth);
+0372             positionDepth=get(gcf,<span class="string">'OuterPosition'</span>);
+0373             positionDepth(1)=positionDepth(1)+floor(positionDepth(3)/2) +25;
+0374             set(gcf,<span class="string">'OuterPosition'</span>,positionDepth);
+0375         <span class="keyword">else</span>
+0376             <span class="comment">%myFigColor=figure();</span>
+0377             <span class="comment">%myFigDepth=figure();</span>
+0378             clf(myFigColor);
+0379             imRGB_tracked=<a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(imRGB,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigColor);
+0380             
+0381             clf(myFigDepth);
+0382             dept_tracked=<a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabelsVisualize.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabelsVisualize(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2,myFigNumber)">manualBBdraw_OCC_WithLabelsVisualize</a>(depth,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>,myFigDepth);
+0383             drawnow
+0384             pause(0.05)
+0385         <span class="keyword">end</span>
+0386         
+0387         tmpColorName=[dest_path <span class="string">'/trackedColor_'</span> num2str(frame) <span class="string">'.jpg'</span>];
+0388         <span class="keyword">if</span>(frame==1)
+0389             imRGB_trackedMASK=imRGB_tracked(:,:,1)==204;
+0390             imRGB_trackedMASK=imRGB_trackedMASK &amp; imRGB_tracked(:,:,2)==204;
+0391             imRGB_trackedMASK=imRGB_trackedMASK &amp; imRGB_tracked(:,:,3)==204;
+0392             finalMask=imfill(~imRGB_trackedMASK,<span class="string">'holes'</span>);
+0393             rp=regionprops(finalMask,<span class="string">'boundingbox'</span>,<span class="string">'Area'</span>);
+0394             
+0395             areaList= cat(1, rp.Area);
+0396             bbList= cat(1, rp.BoundingBox);
+0397             [ddd,areaMax]=max(areaList);
+0398             rect=floor(bbList(areaMax,:));
+0399             
+0400         <span class="keyword">end</span>
+0401         <span class="comment">%clean the image from gray fig border....and save</span>
+0402         imRGB_trackedNEW=imRGB_tracked(rect(2):rect(2)+rect(4),rect(1):rect(1)+rect(3),:);
+0403         imwrite(imRGB_trackedNEW,tmpColorName);
+0404         
+0405         <span class="comment">%clean the image from gray fig border.... and save</span>
+0406         tmpDepthName=[dest_path <span class="string">'/trackedDepth_'</span> num2str(frame) <span class="string">'.jpg'</span>];
+0407         dept_trackedNEW=dept_tracked(rect(2):rect(2)+rect(4),rect(1):rect(1)+rect(3),:);
+0408         imwrite(dept_trackedNEW,tmpDepthName);
+0409     <span class="keyword">end</span>
+0410     <span class="comment">%% just save images</span>
+0411     <span class="keyword">if</span> (save_Images==true &amp;&amp; show_visualization==false)
+0412         
+0413         <span class="comment">%eventually re-scale the images</span>
+0414         <span class="keyword">if</span>(resize_image)
+0415             imRGB = imresize(imRGB, 2);
+0416             depth = imresize(depth, 2);
+0417         <span class="keyword">end</span>
+0418         
+0419         <span class="comment">%empty tracking, so mark this frame</span>
+0420         <span class="keyword">if</span>(isempty(pos))
+0421             bbToPlot=[];
+0422             nanPosition=[nanPosition; 1];
+0423         <span class="keyword">else</span>
+0424             nanPosition=[nanPosition; 0];
+0425             
+0426             <span class="comment">%use the Sr scale factor (see [1] for more details)</span>
+0427             sr = scaleDSKCF_struct.InitialDepth / scaleDSKCF_struct.currDepth;
+0428             
+0429             targ_sz = round(scaleDSKCF_struct.InitialTargetSize * sr);
+0430             
+0431             <span class="comment">%calculate the corresponding bounding box for Plotting!!!!</span>
+0432             <span class="comment">%in this case we need [topLeftX, topLeftY,W,H]</span>
+0433             bbToPlot = [pos([2,1]) - targ_sz([2,1])/2, targ_sz([2,1])];
+0434             <span class="keyword">if</span>(resize_image)
+0435                 bbToPlot=bbToPlot*2;
+0436             <span class="keyword">end</span>
+0437         <span class="keyword">end</span>
+0438         
+0439         bbOCCToPlot=[];
+0440         <span class="keyword">if</span>(trackerDSKCF_struct.currentTarget.underOcclusion)
+0441             widthOCC=trackerDSKCF_struct.currentTarget.occBB(3)-trackerDSKCF_struct.currentTarget.occBB(1);
+0442             heightOCC=trackerDSKCF_struct.currentTarget.occBB(4)-trackerDSKCF_struct.currentTarget.occBB(2);
+0443             bbOCCToPlot=[trackerDSKCF_struct.currentTarget.occBB(1:2); widthOCC; heightOCC]';
+0444             <span class="keyword">if</span>(resize_image)
+0445                 bbOCCToPlot=bbOCCToPlot*2;
+0446             <span class="keyword">end</span>
+0447         <span class="keyword">end</span>
+0448         
+0449         <span class="comment">%draw the bb square....</span>
+0450         <span class="comment">%imRGB_tracked=manualBBdraw_OCC(imRGB,bbToPlot,bbOCCToPlot,'r','y',4);</span>
+0451         <span class="comment">%dept_tracked=manualBBdraw_OCC(depth,bbToPlot,bbOCCToPlot,'r','y',4);</span>
+0452         imRGB_tracked=<a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabels.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabels(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2)">manualBBdraw_OCC_WithLabels</a>(imRGB,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>);
+0453         dept_tracked=<a href="../DS-KCFcode/functionsIO/manualBBdraw_OCC_WithLabels.html" class="code" title="function modifiedImage=manualBBdraw_OCC_WithLabels(img,bb,bbOCC,myColor,myColorOCC,lWidth,myText1,myText2)">manualBBdraw_OCC_WithLabels</a>(depth,bbToPlot,bbOCCToPlot,<span class="string">'r'</span>,<span class="string">'y'</span>,4,<span class="string">'DS-KCF'</span>,<span class="string">'Occluder'</span>);
+0454         
+0455         tmpColorName=[dest_path <span class="string">'/trackedColor_'</span> num2str(frame) <span class="string">'.jpg'</span>];
+0456         <span class="keyword">if</span>(frame==1)
+0457             imRGB_trackedMASK=imRGB_tracked(:,:,1)==204;
+0458             imRGB_trackedMASK=imRGB_trackedMASK &amp; imRGB_tracked(:,:,2)==204;
+0459             imRGB_trackedMASK=imRGB_trackedMASK &amp; imRGB_tracked(:,:,3)==204;
+0460             finalMask=imfill(~imRGB_trackedMASK,<span class="string">'holes'</span>);
+0461             rp=regionprops(finalMask,<span class="string">'boundingbox'</span>,<span class="string">'Area'</span>);
+0462             
+0463             areaList= cat(1, rp.Area);
+0464             bbList= cat(1, rp.BoundingBox);
+0465             [ddd,areaMax]=max(areaList);
+0466             rect=floor(bbList(areaMax,:));
+0467             
+0468         <span class="keyword">end</span>
+0469         <span class="comment">%clean the image from gray fig border....and save</span>
+0470         imRGB_trackedNEW=imRGB_tracked(rect(2):rect(2)+rect(4),rect(1):rect(1)+rect(3),:);
+0471         imwrite(imRGB_trackedNEW,tmpColorName);
+0472         
+0473         <span class="comment">%clean the image from gray fig border.... and save</span>
+0474         tmpDepthName=[dest_path <span class="string">'/trackedDepth_'</span> num2str(frame) <span class="string">'.jpg'</span>];
+0475         dept_trackedNEW=dept_tracked(rect(2):rect(2)+rect(4),rect(1):rect(1)+rect(3),:);
+0476         imwrite(dept_trackedNEW,tmpDepthName);
+0477     <span class="keyword">end</span>
+0478     
+0479     <span class="comment">%now generate the results, starting from the tracker output!!!</span>
+0480     <span class="comment">% the object has being tracked....</span>
+0481     <span class="keyword">if</span>(isempty(pos)==false)
+0482         <span class="comment">%accumulate the position of the DS-KCF tracker remember format [y x]</span>
+0483         positions(frame,:) = pos;
+0484         <span class="comment">%take the sq size (see [1]) invert the coordinate as you need to</span>
+0485         <span class="comment">%combine this with positions</span>
+0486         sqVector(frame,:)= scaleDSKCF_struct.target_sz(scaleDSKCF_struct.i).target_sz([2,1]);
+0487         
+0488         <span class="comment">%use the Sr scale factor (see [1] for more details)</span>
+0489         sr = scaleDSKCF_struct.InitialDepth / scaleDSKCF_struct.currDepth;
+0490         targ_sz = round(scaleDSKCF_struct.InitialTargetSize * sr);
+0491         <span class="comment">%invert the coordinate as you need to combine this with positions</span>
+0492         srVector(frame,:) = targ_sz([2,1]);
+0493         
+0494     <span class="keyword">else</span>
+0495         pos=positions(frame-1,:);
+0496         positions(frame,:) = pos;
+0497         
+0498         tmpSize=sqVector(frame-1,:);
+0499         sqVector(frame,:)= tmpSize;
+0500         
+0501         tmpSize=srVector(frame-1,:);
+0502         srVector(frame,:) = tmpSize;
+0503         
+0504     <span class="keyword">end</span>
+0505     
+0506     <span class="comment">%Update PAST Target data structure</span>
+0507     <span class="keyword">if</span>(frame&gt;1)
+0508         <span class="comment">%previous target entries</span>
+0509         trackerDSKCF_struct.previousTarget=trackerDSKCF_struct.currentTarget;
+0510     <span class="keyword">end</span>
+0511     
+0512     
+0513 <span class="keyword">end</span>
+0514 
+0515 <span class="keyword">if</span> resize_image,
+0516     positions = positions * 2;
+0517     sqVector= sqVector*2;
+0518     srVector= srVector*2;
+0519 <span class="keyword">end</span>
+0520 
+0521 <span class="comment">%now generate the final results, this are in the format requested by the</span>
+0522 <span class="comment">%Princeton RGB-D dataset in the format [topLeftX, topLeftY, bottomRightX,</span>
+0523 <span class="comment">%bottomRightY]. Then move from the change from the center + target size</span>
+0524 <span class="comment">%format to the above mentioned one</span>
+0525 
+0526 dsKCFoutputSr=[positions(:,[2,1]) - srVector/2, positions(:,[2,1]) + srVector/2];
+0527 dsKCFoutputSq=[positions(:,[2,1]) - sqVector/2, positions(:,[2,1]) + sqVector/2];
+0528 
+0529 <span class="comment">%now set to NaN the output for the frames where the tracker was not</span>
+0530 <span class="comment">%available</span>
+0531 dsKCFoutputSr(nanPosition&gt;0,:)=NaN;
+0532 dsKCFoutputSq(nanPosition&gt;0,:)=NaN;
+0533 
+0534 <span class="comment">%add the occlusion state vector.</span>
+0535 dsKCFoutputSr=[dsKCFoutputSr, occlusionState];
+0536 dsKCFoutputSq=[dsKCFoutputSq, occlusionState];
+0537 <span class="keyword">end</span>
+0538</pre></div>
+<hr><address>Generated on Mon 06-Jul-2015 12:12:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
